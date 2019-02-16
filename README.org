@@ -4,9 +4,13 @@ ChainWatcher is an application built using [[https://mesg.com][MESG]] services. 
 
 ** Purpose
 
-ChainWatcher allows one to monitor the transfers that involve an address or addresses that one is interested in. For each transfer, the application also finds the balance of that address; writes a record of the address, transfer and current balance to IPFS; and then broadcasts the location of this record using IPFS pubsub to allow remote consumers to process this information.
+ChainWatcher allows one to monitor the transfers that involve addresses one is interested in. 
 
-** How to run / usage
+For each relevant transfer, the application also finds the balance of that address and writes a record of the address, transfer and current balance to IPFS. 
+
+The location of the IPFS files are then broadcast using IPFS pubsub, which allows the information to be received by remote consumers.
+
+** Usage
 
 Deploy ~ethereum-erc20~:
 #+BEGIN_SRC
