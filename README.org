@@ -1,0 +1,66 @@
+* ChainWatcher
+
+ChainWatcher is an application built using [[https://mesg.com][MESG]] services. It utilises the [[https://github.com/mesg-foundation/service-ethereum-erc20][ethereum-erc20]] service, as well as an [[https://github.com/dcprevere/service-ipfs][IPFS]] service written specifically for this project.
+
+** Purpose
+
+ChainWatcher allows one to monitor the transfers that involve an address or addresses that one is interested in. For each transfer, the application also finds the balance of that address; writes a record of the address, transfer and current balance to IPFS; and then broadcasts the location of this record using IPFS pubsub to allow remote consumers to process this information.
+
+** How to run / usage
+
+Deploy ~ethereum-erc20~:
+#+BEGIN_SRC
+mesg-core service deploy https://github.com/mesg-foundation/service-ethereum-erc20 --env PROVIDER_ENDPOINT=https://mainnet.infura.io/v3/<PROJECT-ID>
+mesg-core service start ethereum-erc20
+#+END_SRC
+
+For my project, I am using the ID: ~ddafdde539404ab3a7474df1618b20a7~
+
+Deploy ~service-ipfs~:
+#+BEGIN_SRC
+mesg-core service deploy https://github.com/DCPRevere/service-ipfs
+mesg-core service start service-ipfs
+#+END_SRC
+
+If you wish to develop an application using ~service-ipfs~, please see its README.
+
+Clone the application:
+~git clone https://github.com/DCPRevere/chain-watcher~
+
+The contract address in ~./resources/contract.json~ is that of MESG, but can be freely changed to any other ERC20 token.
+
+For demonstration purposes, the application is set to monitor all addresses. In the case that you one wishes to only monitor certain addresses, two lines need to be commented. See the comments in ~index.js~ lines 69 and 70.
+
+The addresses to monitor are set in ~./resources/addresses.json~.
+
+#+BEGIN_SRC
+cd ./chain-watcher
+node ./index.js
+#+END_SRC
+
+If the logs show the application receiving transfers, and publishing messages on IPFS topics then it is running normally. It may take up to a minute for transfers to arrive, due to the time between blocks.
+
+*** What is published to IPFS?
+
+The record is published as a file in IPFS. The IPFS path to this file is then broadcast on a pubsub topic which is the address. Thus, to monitor transfers related to an address, one can just subscribe to its IPFS topic.
+
+Documents published to IPFS can be viewed using HTTP:
+https://ipfs.io/ipfs/ADDRESS
+
+Due to an issue with ~ipfs-js~, it can take some time (up to 30 mins) for messages published using the library to be available using this.
+
+In case this proves to be a problem, here are two examples of records published using the application:
+
+#+BEGIN_SRC
+https://ipfs.io/ipfs/QmNfMqvBU1ii7oKGcDA4MvgBCVzANswJrn3D6cffbZCttc
+https://ipfs.io/ipfs/QmWHVsydeghVGt9gRMCU9ZGbasJMfoQbrBaQxTWhsKkcF5
+#+END_SRC
+
+** Thoughts, limitations, and further work
+
+Ideally, the functionality of ChainWatcher could be bundled into a service that can be asked to subscribe to addresses by other applications or services, but service composition is not yet possible in MESG. Once it is, it will allow far more powerful composition of services which, like ChainWatcher, rely on other services to provide data, or to provide abstractions over classes of services -- messaging, storage, etc. -- far increaing the flexibility of MESG services.
+
+The current implementation of the IPFS service is minimal, and only supports the operations ~add~, ~cat~, ~subscribe~, and ~publish~. I will continue with its development to implement a larger subset of IPFS functionality. The library it is using, ~ipfs-js~, has the benefit of allowing an IPFS node to be started within the process. However, it may be that this it is preferable to run the IPFS node as an external process and add it as a MESG dependency.
+
+And lastly, I wish to thank the MESG team for creating software that is both innovative and a joy to use. This has been a great hackathon to be part of, especially because of the help MESG's developers give to the community. I hope that in the coming months we will see the increase in services and applications that MESG deserves.
+
