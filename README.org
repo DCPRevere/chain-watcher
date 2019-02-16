@@ -60,6 +60,12 @@ https://ipfs.io/ipfs/QmNfMqvBU1ii7oKGcDA4MvgBCVzANswJrn3D6cffbZCttc
 https://ipfs.io/ipfs/QmWHVsydeghVGt9gRMCU9ZGbasJMfoQbrBaQxTWhsKkcF5
 #+END_SRC
 
+To subscribe to these messages, use the subscribe task of the IPFS service:
+#+BEGIN_SRC
+subscribe: { topic: ADDRESS }
+#+END_SRC
+
+
 ** Thoughts, limitations, and further work
 
 Ideally, the functionality of ChainWatcher could be bundled into a service that can be asked to subscribe to addresses by other applications or services, but service composition is not yet possible in MESG. Once it is, it will allow far more powerful composition of services which, like ChainWatcher, rely on other services to provide data, or to provide abstractions over classes of services -- messaging, storage, etc. -- far increaing the flexibility of MESG services.
